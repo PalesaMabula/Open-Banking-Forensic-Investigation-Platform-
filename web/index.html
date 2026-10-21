@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Banking Forensic</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+
+  <body>
+    <button
+      id="theme-toggle-btn"
+      class="theme-toggle"
+      aria-label="Toggle light and dark theme"
+    >
+      Dark
+    </button>
+
+    <div id="home-screen" class="home-screen">
+      <div class="home-card">
+        <div class="home-title">Open Banking Forensic</div>
+        <div class="home-subtitle">Forensic Investigation Platform</div>
+        <div class="home-actions">
+          <button id="home-openbanking-btn" class="btn btn-primary btn-block">
+            Open Banking Simulation
+          </button>
+          <button id="home-investigator-btn" class="btn btn-block">
+            Investigator Sign In
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="investigator-bar" class="investigator-bar hidden">
+      <div id="investigator-signed-out">
+        <button id="investigator-login-btn" class="btn btn-small">
+          Investigator Sign In
+        </button>
+      </div>
+      <div id="investigator-signed-in" class="hidden">
+        <div class="investigator-identity">
+          <div id="investigator-name-display" class="investigator-name"></div>
+          <div id="investigator-role-display" class="investigator-role"></div>
+        </div>
+        <button id="investigator-logout-btn" class="btn btn-small">
+          Sign Out
+        </button>
+      </div>
+    </div>
+
+    <div class="app-shell hidden" id="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-title">Open Banking Forensic</div>
+          <div class="brand-subtitle">Forensic Investigation Platform</div>
+        </div>
+
+        <nav class="nav" aria-label="Main navigation">
+          <div id="nav-group-forensics">
+            <button class="nav-item" data-section="dashboard">Dashboard</button>
+            <div class="nav-group-label">Forensic Investigation</div>
+            <button class="nav-item" data-section="investigators">
+              Investigators
+            </button>
+            <button class="nav-item" data-section="cases">Cases</button>
+            <button class="nav-item" data-section="api-comm">
+              API Communication
+            </button>
+            <button class="nav-item" data-section="findings">Findings</button>
+            <button class="nav-item" data-section="investigation">
+              Investigation
+            </button>
+            <button class="nav-item" data-section="evaluation">
+              Evaluation
+            </button>
+          </div>
+
+          <div id="nav-group-openbanking">
+            <div class="nav-group-label">Open Banking Simulation</div>
+            <button class="nav-item" data-section="customer">Customer</button>
+            <button class="nav-item" data-section="budgetwise">
+              BudgetWise
+            </button>
+            <button class="nav-item" data-section="insurewise">
+              InsureWise
+            </button>
+            <button class="nav-item nav-item-scenario" data-section="scenarios">
+              Scenario Controls
+            </button>
+          </div>
+        </nav>
+
+        <div class="nav-divider"></div>
+
+        <div class="sidebar-footer">
+          <button
+            id="return-home-btn"
+            class="btn btn-ghost btn-block hidden"
+            style="margin-bottom: 8px"
+          >
+            ← Return to Home
+          </button>
+          <button id="refresh-btn" class="btn btn-ghost btn-block">
+            Refresh
+          </button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <!-- ===================== DASHBOARD ===================== -->
+        <section id="section-dashboard" class="section active">
+          <header class="section-header">
+            <h1>System Forensic Status</h1>
+            <p class="section-subtitle">
+              API-driven forensic readiness and incident reconstruction
+            </p>
+          </header>
+
+          <div id="integrity-warning" class="warning-banner hidden"></div>
+          <div id="custody-warning" class="warning-banner hidden"></div>
+
+          <div class="metric-grid" id="dashboard-metrics">
+            <div class="loading-text">Loading dashboard...</div>
+          </div>
+
+          <h2 class="subsection-title">Connected Applications</h2>
+          <div id="dashboard-apps" class="metric-grid">
+            <div class="loading-text">Loading...</div>
+          </div>
+
+          <h2 class="subsection-title">Recent Findings</h2>
+          <div id="dashboard-recent-findings">
+            <div class="loading-text">Loading...</div>
+          </div>
+        </section>
+
+        <!-- ===================== INVESTIGATORS ===================== -->
+        <section id="section-investigators" class="section">
+          <header class="section-header">
+            <h1>Investigators</h1>
+          </header>
+
+          <div id="investigators-create-panel" class="panel hidden">
+            <h3 style="margin-top: 0">Create Investigator</h3>
+            <form
+              id="investigator-create-form"
+              class="form-grid"
+              style="max-width: 360px"
+            >
+              <label
+                >Display Name
+                <input
+                  type="text"
+                  id="new-investigator-display-name"
+                  required
+                />
+              </label>
+              <label
+                >Username
+                <input type="text" id="new-investigator-username" required />
+              </label>
+              <label
+                >Password
+                <input
+                  type="password"
+                  id="new-investigator-password"
+                  required
+                />
+              </label>
+              <label
+                >Role
+                <select id="new-investigator-role">
+                  <option value="Lead Investigator">Lead Investigator</option>
+                  <option value="Forensic Analyst">Forensic Analyst</option>
+                </select>
+              </label>
+              <label
+                >Status
+                <select id="new-investigator-status">
+                  <option value="ACTIVE">Active</option>
+                  <option value="INACTIVE">Inactive</option>
+                </select>
+              </label>
+              <button type="submit" class="btn btn-primary">
+                Create Investigator
+              </button>
+            </form>
+            <div id="investigator-create-result" class="result-text"></div>
+          </div>
+          <div id="investigators-signin-notice" class="empty-state">
+            Sign in as a Lead Investigator to manage investigator accounts.
+          </div>
+
+          <h2 class="subsection-title">Registered Investigators</h2>
+          <div id="investigators-table-wrap">
+            <div class="loading-text">Loading investigators...</div>
+          </div>
+
+          <div id="investigator-edit-panel" class="panel hidden"></div>
+        </section>
+
+        <!-- ===================== CASES ===================== -->
+        <section id="section-cases" class="section">
+          <header class="section-header">
+            <h1>Cases</h1>
+            <p class="section-subtitle">Investigator case management</p>
+          </header>
+
+          <div id="cases-create-panel" class="panel hidden">
+            <h3 style="margin-top: 0">Create Case</h3>
+            <form
+              id="case-create-form"
+              class="form-grid"
+              style="max-width: 400px"
+            >
+              <label
+                >Case Title<input type="text" id="case-title" required
+              /></label>
+              <label
+                >Account Number (optional)<input
+                  type="text"
+                  id="case-account-id"
+              /></label>
+              <label
+                >Finding ID (optional)<input type="text" id="case-finding-id"
+              /></label>
+              <button type="submit" class="btn btn-primary">Create Case</button>
+            </form>
+            <div id="case-create-result" class="result-text"></div>
+          </div>
+          <div id="cases-signin-notice" class="empty-state">
+            Sign in as an investigator to create cases.
+          </div>
+
+          <h2 class="subsection-title">All Cases</h2>
+          <div id="cases-table-wrap">
+            <div class="loading-text">Loading cases...</div>
+          </div>
+
+          <div id="case-detail-panel" class="panel hidden"></div>
+        </section>
+
+        <!-- ===================== CUSTOMER ===================== -->
+        <section id="section-customer" class="section">
+          <header class="section-header">
+            <h1>Customer Account</h1>
+            <p class="section-subtitle">Customer 001 — Investec Sandbox</p>
+          </header>
+
+          <div class="panel">
+            <form
+              id="customer-load-form"
+              class="form-grid"
+              style="max-width: 340px"
+            >
+              <label
+                >Account Number
+                <input
+                  type="text"
+                  id="customer-account-id"
+                  placeholder="Enter account number"
+                  required
+                />
+              </label>
+              <button type="submit" class="btn btn-primary">
+                Load Account
+              </button>
+            </form>
+          </div>
+
+          <div id="customer-content">
+            <div class="empty-state">
+              Enter an account number to view customer information.
+            </div>
+          </div>
+          <button
+            id="customer-refresh-btn"
+            class="btn btn-small hidden"
+            style="margin-top: 12px"
+          >
+            ↻ Refresh
+          </button>
+        </section>
+
+        <!-- ===================== BUDGETWISE ===================== -->
+        <section id="section-budgetwise" class="section">
+          <header class="section-header">
+            <h1>BudgetWise</h1>
+            <p class="section-subtitle">Personal Finance Application</p>
+          </header>
+
+          <div class="panel">
+            <p class="app-desc" style="margin: 0">
+              Helps customers access banking information for budgeting and
+              spending management.
+            </p>
+          </div>
+
+          <div class="panel">
+            <h3 style="margin-top: 0">Request Customer Access</h3>
+            <form
+              id="budgetwise-request-form"
+              class="form-grid"
+              style="max-width: 340px"
+            >
+              <label
+                >Account Number
+                <input
+                  type="text"
+                  id="budgetwise-account-id"
+                  placeholder="Enter account number"
+                  required
+                />
+              </label>
+              <label class="checkbox-row"
+                ><input type="checkbox" checked disabled /> Account
+                Information</label
+              >
+              <label class="checkbox-row"
+                ><input type="checkbox" checked disabled /> Transaction
+                History</label
+              >
+              <button type="submit" class="btn btn-primary">
+                Send Access Request
+              </button>
+            </form>
+          </div>
+
+          <div id="budgetwise-status">
+            <div class="empty-state">No access request sent yet.</div>
+          </div>
+          <button
+            id="budgetwise-refresh-btn"
+            class="btn btn-small hidden"
+            style="margin-top: 12px"
+          >
+            ↻ Refresh Status
+          </button>
+        </section>
+
+        <!-- ===================== INSUREWISE ===================== -->
+        <section id="section-insurewise" class="section">
+          <header class="section-header">
+            <h1>InsureWise</h1>
+            <p class="section-subtitle">Insurance Account Verification</p>
+          </header>
+
+          <div class="panel">
+            <p class="app-desc" style="margin: 0">
+              Uses customer-authorized account information for financial account
+              verification.
+            </p>
+          </div>
+
+          <div class="panel">
+            <h3 style="margin-top: 0">Request Customer Access</h3>
+            <form
+              id="insurewise-request-form"
+              class="form-grid"
+              style="max-width: 340px"
+            >
+              <label
+                >Account Number
+                <input
+                  type="text"
+                  id="insurewise-account-id"
+                  placeholder="Enter account number"
+                  required
+                />
+              </label>
+              <label class="checkbox-row"
+                ><input type="checkbox" checked disabled /> Account
+                Information</label
+              >
+              <label class="checkbox-row"
+                ><input type="checkbox" disabled /> Transaction History (not
+                requested)</label
+              >
+              <button type="submit" class="btn btn-primary">
+                Send Access Request
+              </button>
+            </form>
+          </div>
+
+          <div id="insurewise-status">
+            <div class="empty-state">No access request sent yet.</div>
+          </div>
+          <button
+            id="insurewise-refresh-btn"
+            class="btn btn-small hidden"
+            style="margin-top: 12px"
+          >
+            ↻ Refresh Status
+          </button>
+        </section>
+
+        <!-- ===================== API COMMUNICATION ===================== -->
+        <section id="section-api-comm" class="section">
+          <header class="section-header">
+            <h1>API Communication</h1>
+            <p class="section-subtitle">
+              Communications observed and captured by the Open Banking Forensic
+              gateway
+            </p>
+          </header>
+
+          <div id="api-comm-table">
+            <div class="loading-text">Loading API communication...</div>
+          </div>
+        </section>
+
+        <!-- ===================== FINDINGS ===================== -->
+        <section id="section-findings" class="section">
+          <header class="section-header">
+            <h1>Findings</h1>
+            <p class="section-subtitle">
+              Detected incidents from controlled scenarios
+            </p>
+          </header>
+
+          <div class="filter-bar">
+            <label
+              >Scenario
+              <select id="filter-scenario">
+                <option value="">All</option>
+                <option value="CREDENTIAL_THEFT">Credential Theft</option>
+                <option value="TOKEN_HIJACKING">Token Hijacking</option>
+                <option value="CONSENT_BASED_FRAUD">Consent-Based Fraud</option>
+                <option value="CROSS_BORDER_DATA_EXFILTRATION">
+                  Cross-Border Data Exfiltration
+                </option>
+              </select>
+            </label>
+            <label
+              >Severity
+              <select id="filter-severity">
+                <option value="">All</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+            </label>
+            <label
+              >Status
+              <select id="filter-status">
+                <option value="">All</option>
+                <option value="OPEN">Open</option>
+                <option value="REVIEWED">Reviewed</option>
+                <option value="CLOSED">Closed</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="findings-table-wrap">
+            <div class="loading-text">Loading findings...</div>
+          </div>
+        </section>
+
+        <!-- ===================== INVESTIGATION ===================== -->
+        <section id="section-investigation" class="section">
+          <header class="section-header">
+            <h1>Investigation</h1>
+            <p class="section-subtitle">
+              Select a finding from Findings to begin.
+            </p>
+          </header>
+
+          <div id="investigation-empty" class="empty-state">
+            No finding selected. Open <strong>Findings</strong> and choose one
+            to investigate.
+          </div>
+
+          <div id="investigation-content" class="hidden">
+            <div class="panel" id="investigation-summary-panel"></div>
+
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="timeline">
+                Timeline
+              </button>
+              <button class="tab-btn" data-tab="evidence">Evidence</button>
+              <button class="tab-btn" data-tab="custody">
+                Chain of Custody
+              </button>
+            </div>
+
+            <div class="tab-panel active" id="tab-timeline">
+              <div id="timeline-content" class="loading-text">
+                Loading timeline...
+              </div>
+            </div>
+            <div class="tab-panel" id="tab-evidence">
+              <div id="evidence-content" class="loading-text">
+                Loading evidence...
+              </div>
+            </div>
+            <div class="tab-panel" id="tab-custody">
+              <div id="custody-content" class="loading-text">
+                Loading custody history...
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== EVALUATION ===================== -->
+        <section id="section-evaluation" class="section">
+          <header class="section-header">
+            <h1>Evaluation Metrics</h1>
+            <p class="section-subtitle">
+              Detection Latency · Log Completeness · Evidence Preservation Rate
+            </p>
+          </header>
+
+          <button id="evaluate-all-btn" class="btn btn-primary">
+            Evaluate Findings
+          </button>
+          <div id="evaluate-feedback"></div>
+
+          <h2 class="subsection-title">Overall</h2>
+          <div class="metric-grid" id="evaluation-overall">
+            <div class="loading-text">Loading evaluation summary...</div>
+          </div>
+
+          <h2 class="subsection-title">By Scenario</h2>
+          <div id="evaluation-by-scenario"></div>
+        </section>
+
+        <!-- ===================== SCENARIO CONTROLS ===================== -->
+        <section id="section-scenarios" class="section">
+          <header class="section-header">
+            <h1>Scenario Controls</h1>
+            <p class="section-subtitle">Controlled Incident Simulation</p>
+          </header>
+
+          <p class="safety-note">
+            These controls generate simulated security incidents for forensic
+            analysis. No attack is performed against Investec or any external
+            system.
+          </p>
+
+          <div class="panel" id="scenario-active-context">
+            <h3 style="margin-top: 0">Active Open Banking Context</h3>
+            <div class="kv-grid">
+              <div>
+                <div class="kv-label">Customer</div>
+                <div class="kv-value">Customer 001</div>
+              </div>
+              <div>
+                <div class="kv-label">Account</div>
+                <div class="kv-value" id="scenario-active-account">
+                  No active account
+                </div>
+              </div>
+            </div>
+            <div class="form-grid" style="margin-top: 12px; max-width: 260px">
+              <label
+                >Application
+                <select id="scenario-app-select">
+                  <option value="BudgetWise">BudgetWise</option>
+                  <option value="InsureWise">InsureWise</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="scenario-controls-grid">
+            <div class="scenario-control-card">
+              <h3>Credential Theft</h3>
+              <p>
+                Simulates valid application credentials being used from an
+                unrecognized context to obtain a new access token, for a
+                customer-approved account.
+              </p>
+              <button class="btn btn-scenario" data-scenario="credential-theft">
+                Run Simulation
+              </button>
+            </div>
+            <div class="scenario-control-card">
+              <h3>Token Hijacking</h3>
+              <p>
+                Simulates an existing access token being replayed from another
+                application context, for a customer-approved account.
+              </p>
+              <button class="btn btn-scenario" data-scenario="token-hijacking">
+                Run Simulation
+              </button>
+            </div>
+            <div class="scenario-control-card">
+              <h3>Consent-Based Fraud</h3>
+              <p>
+                Simulates an application attempting access beyond its
+                customer-authorized permissions.
+              </p>
+              <button class="btn btn-scenario" data-scenario="consent-fraud">
+                Run Simulation
+              </button>
+            </div>
+            <div class="scenario-control-card">
+              <h3>Cross-Border Data Exfiltration</h3>
+              <p>
+                Simulates authorized financial-data access associated with a
+                foreign destination.
+              </p>
+              <button class="btn btn-scenario" data-scenario="cross-border">
+                Run Simulation
+              </button>
+            </div>
+          </div>
+
+          <div id="scenario-result" class="panel hidden"></div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ===================== SCENARIO MODAL ===================== -->
+    <div id="scenario-modal" class="modal-overlay hidden">
+      <div class="modal-box">
+        <h3 id="scenario-modal-title"></h3>
+        <div id="scenario-modal-body" class="kv-grid"></div>
+        <p id="scenario-modal-explanation" class="drawer-note"></p>
+        <div id="scenario-modal-extra"></div>
+        <div class="modal-actions">
+          <button id="scenario-modal-cancel" class="btn">Cancel</button>
+          <button id="scenario-modal-run" class="btn btn-primary">
+            Run Simulation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== INVESTIGATOR LOGIN MODAL ===================== -->
+    <div id="investigator-login-modal" class="modal-overlay hidden">
+      <div class="modal-box">
+        <h3>Investigator Login</h3>
+        <form id="investigator-login-form" class="form-grid">
+          <label
+            >Username<input type="text" id="investigator-username" required
+          /></label>
+          <label
+            >Password<input type="password" id="investigator-password" required
+          /></label>
+          <div id="investigator-login-error" class="result-text error"></div>
+          <div class="modal-actions">
+            <button type="button" id="investigator-login-cancel" class="btn">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Sign In</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/static/js/core.js"></script>
+    <script src="/static/js/components/modals.js"></script>
+    <script src="/static/js/pages/dashboard.js"></script>
+    <script src="/static/js/pages/investigators.js"></script>
+    <script src="/static/js/pages/cases.js"></script>
+    <script src="/static/js/pages/openbanking.js"></script>
+    <script src="/static/js/pages/forensics.js"></script>
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>
