@@ -41,6 +41,7 @@ function initCasesPage() {
         resultEl.className = "result-text success";
         document.getElementById("case-create-form").reset();
         loadCasesList();
+        loadFindings();
       } catch (err) {
         resultEl.textContent = err.message;
         resultEl.className = "result-text error";
@@ -67,7 +68,7 @@ async function loadCasesList() {
         <td>${badge(c.status, c.status)}</td>
         <td>${escapeHtml(c.assigned_investigator_name || "—")}</td>
         <td>${formatTimestamp(c.created_at)}</td>
-        <td><button class="btn btn-small" data-open-case="${c.case_id}">Open Case</button></td>
+        <td><button class="btn btn-small" data-open-case="${c.case_id}">View Case</button></td>
       </tr>`,
         )
         .join("")}</tbody>

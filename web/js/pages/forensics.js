@@ -100,6 +100,7 @@ async function loadApiCommunication() {
   }
 }
 let cachedApplications = [];
+let findingCaseMap = {};
 
 async function loadFindings() {
   const wrap = document.getElementById("findings-table-wrap");
@@ -111,6 +112,15 @@ async function loadFindings() {
       cachedApplications = ob.applications;
     } catch (e) {
       /* fall back to IDs */
+    }
+    try {
+      const cases = await apiRequest("/cases");
+      findingCaseMap = {};
+      cases.forEach((c) => {
+        if (c.finding_id) findingCaseMap[c.finding_id] = c.case_id;
+      });
+    } catch (e) {
+      findingCaseMap = {};
     }
     renderFindingsTable();
   } catch (err) {
@@ -161,7 +171,11 @@ function renderFindingsTable() {
       <td>${escapeHtml(f.account_id || "—")}</td>
       <td>
         <button class="btn btn-small" data-investigate="${f.finding_id}">Investigate</button>
-        <button class="btn btn-small" data-create-case="${f.finding_id}|${f.account_id || ""}">Create Case</button>
+        ${
+          findingCaseMap[f.finding_id]
+            ? ""
+            : `<button class="btn btn-small" data-create-case="${f.finding_id}|${f.account_id || ""}">Create Case</button>`
+        }
       </td>
     </tr>`,
       )
