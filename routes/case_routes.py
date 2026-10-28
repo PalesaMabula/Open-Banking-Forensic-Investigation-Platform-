@@ -34,7 +34,7 @@ def cases_create(
         endpoint="/cases",
         response_status=200,
         account_id=request.account_id,
-        source="LOCAL_CLIENT",
+        source="INVESTIGATOR",
         destination="OBFIR",
     )
     record_forensic_event(
@@ -85,7 +85,7 @@ def cases_reassign(
         endpoint=f"/cases/{case_id}/assign",
         response_status=200,
         account_id=existing.get("account_id"),
-        source="LOCAL_CLIENT",
+        source="INVESTIGATOR",
         destination="OBFIR",
     )
     record_forensic_event(
@@ -127,7 +127,7 @@ def cases_status_update(
         endpoint=f"/cases/{case_id}/status",
         response_status=200,
         account_id=existing.get("account_id"),
-        source="LOCAL_CLIENT",
+        source="INVESTIGATOR",
         destination="OBFIR",
     )
     record_forensic_event(

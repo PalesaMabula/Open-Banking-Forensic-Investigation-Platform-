@@ -259,12 +259,9 @@
             >
               <label
                 >Account Number
-                <input
-                  type="text"
-                  id="customer-account-id"
-                  placeholder="Enter account number"
-                  required
-                />
+                <select id="customer-account-id" required>
+                  <option value="">Select an account…</option>
+                </select>
               </label>
               <button type="submit" class="btn btn-primary">
                 Load Account
@@ -309,12 +306,9 @@
             >
               <label
                 >Account Number
-                <input
-                  type="text"
-                  id="budgetwise-account-id"
-                  placeholder="Enter account number"
-                  required
-                />
+                <select id="budgetwise-account-id" required>
+                  <option value="">Select an account…</option>
+                </select>
               </label>
               <label class="checkbox-row"
                 ><input type="checkbox" checked disabled /> Account
@@ -365,12 +359,9 @@
             >
               <label
                 >Account Number
-                <input
-                  type="text"
-                  id="insurewise-account-id"
-                  placeholder="Enter account number"
-                  required
-                />
+                <select id="insurewise-account-id" required>
+                  <option value="">Select an account…</option>
+                </select>
               </label>
               <label class="checkbox-row"
                 ><input type="checkbox" checked disabled /> Account
@@ -638,10 +629,18 @@
         <h3>Investigator Login</h3>
         <form id="investigator-login-form" class="form-grid">
           <label
-            >Username<input type="text" id="investigator-username" required
+            >Username<input
+              type="text"
+              id="investigator-username"
+              value="investigator001"
+              required
           /></label>
           <label
-            >Password<input type="password" id="investigator-password" required
+            >Password<input
+              type="password"
+              id="investigator-password"
+              value="investigator-dev-password-1"
+              required
           /></label>
           <div id="investigator-login-error" class="result-text error"></div>
           <div class="modal-actions">

@@ -16,7 +16,7 @@ def record_api_interaction(
     endpoint: str,
     response_status: int,
     account_id: str | None = None,
-    source: str = "LOCAL_CLIENT",
+    source: str = "OBFIR",
     destination: str = "INVESTEC_SANDBOX",
 ) -> str:
     #records an API interaction in the forensic database and returns a unique interaction_id for linking to forensic events

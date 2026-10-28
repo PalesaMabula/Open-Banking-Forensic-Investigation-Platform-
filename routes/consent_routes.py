@@ -23,7 +23,7 @@ def create_consent_endpoint(request: ConsentCreateRequest):
         endpoint="/consents",
         response_status=200,
         account_id=request.account_id,
-        source="LOCAL_CLIENT",
+        source="TPP",
         destination="OBFIR",
     )
     record_forensic_event(
@@ -55,7 +55,7 @@ def authorize_consent_endpoint(consent_id: str):
         endpoint=f"/consents/{consent_id}/authorize",
         response_status=200,
         account_id=consent["account_id"],
-        source="LOCAL_CLIENT",
+        source="CUSTOMER",
         destination="OBFIR",
     )
     record_forensic_event(
@@ -87,7 +87,7 @@ def reject_consent_endpoint(consent_id: str):
         endpoint=f"/consents/{consent_id}/reject",
         response_status=200,
         account_id=consent["account_id"],
-        source="LOCAL_CLIENT",
+        source="CUSTOMER",
         destination="OBFIR",
     )
     record_forensic_event(

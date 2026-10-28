@@ -80,7 +80,7 @@ def investigators_create(
         http_method="POST",
         endpoint="/investigators",
         response_status=200,
-        source="LOCAL_CLIENT",
+        source="INVESTIGATOR",
         destination="OBFIR",
     )
     record_forensic_event(
@@ -127,7 +127,7 @@ def investigators_update(
         http_method="PATCH",
         endpoint=f"/investigators/{investigator_id}",
         response_status=200,
-        source="LOCAL_CLIENT",
+        source="INVESTIGATOR",
         destination="OBFIR",
     )
     record_forensic_event(

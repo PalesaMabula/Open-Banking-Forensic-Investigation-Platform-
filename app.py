@@ -8,7 +8,7 @@ import uvicorn
 from auth.authentication import seed_demo_applications
 from auth.consent import seed_demo_consents
 from auth.investigator import seed_demo_investigators
-from banking.investec import get_access_token
+from banking.investec import get_access_token, get_accounts
 from database.database import init_database, get_connection
 from forensic.custody import backfill_created_custody_events
 from forensic.integrity import backfill_hash_chain
@@ -70,6 +70,31 @@ def investec_token_test():
         "scope": token_data.get("scope"),
     }
 
+@app.get("/sandbox/accounts")
+def sandbox_accounts():
+    """Demo helper: lists the live Investec sandbox accounts so the UI can
+    offer them as a dropdown. This is a convenience for demonstration only
+    and is not part of the consented Open Banking data-access flow."""
+    try:
+        response = get_accounts()
+        response.raise_for_status()
+        payload = response.json()
+    except Exception as exc:  # noqa: BLE001 - surface any failure to the UI
+        return {"status": "error", "detail": str(exc), "accounts": []}
+
+    raw_accounts = payload.get("data", {}).get("accounts", [])
+    accounts = [
+        {
+            "accountId": acc.get("accountId"),
+            "accountName": acc.get("accountName")
+            or acc.get("productName")
+            or "Account",
+            "productName": acc.get("productName") or "",
+        }
+        for acc in raw_accounts
+        if acc.get("accountId")
+    ]
+    return {"status": "ok", "accounts": accounts}
 
 @app.get("/database/status")
 def database_status():

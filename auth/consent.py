@@ -188,7 +188,7 @@ def seed_demo_consents() -> None:
             http_method="POST",
             endpoint="/consents",
             response_status=200,
-            source="LOCAL_CLIENT",
+            source="TPP",
             destination="OBFIR",
         )
         record_forensic_event(
@@ -210,7 +210,7 @@ def seed_demo_consents() -> None:
             http_method="POST",
             endpoint=f"/consents/{consent['consent_id']}/authorize",
             response_status=200,
-            source="LOCAL_CLIENT",
+            source="CUSTOMER",
             destination="OBFIR",
         )
         record_forensic_event(

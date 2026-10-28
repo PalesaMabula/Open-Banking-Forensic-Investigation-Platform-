@@ -230,7 +230,7 @@ def authenticate_and_issue_token(
             http_method="POST",
             endpoint=endpoint,
             response_status=401,
-            source="LOCAL_CLIENT",
+            source="TPP",
             destination="OBFIR",
         )
         record_forensic_event(
@@ -251,7 +251,7 @@ def authenticate_and_issue_token(
         http_method="POST",
         endpoint=endpoint,
         response_status=200,
-        source="LOCAL_CLIENT",
+        source="TPP",
         destination="OBFIR",
     )
     record_forensic_event(

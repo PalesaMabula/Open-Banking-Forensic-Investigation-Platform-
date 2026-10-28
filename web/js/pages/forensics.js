@@ -1,6 +1,26 @@
 // ================================================
 // API Communication, Findings, Investigation, Evaluation pages
 // ================================================
+
+// Maps stored source/destination actors to the generic role labels used
+// across the API Communication, Timeline and Evidence views, so the full
+// TPP → Gateway → Bank communication chain is visible to an investigator.
+const ACTOR_LABELS = {
+  TPP: "TPP",
+  CUSTOMER: "Customer",
+  OBFIR: "Gateway",
+  INVESTEC_SANDBOX: "Bank",
+  LOCAL_CLIENT: "Client",
+  INVESTIGATOR: "Investigator",
+};
+
+function channelLabel(source, destination) {
+  if (!source && !destination) return "—";
+  const s = ACTOR_LABELS[source] || source || "?";
+  const d = ACTOR_LABELS[destination] || destination || "?";
+  return `${s} → ${d}`;
+}
+
 async function loadApiCommunication() {
   const el = document.getElementById("api-comm-table");
   el.innerHTML = '<div class="loading-text">Loading API communication...</div>';
@@ -31,7 +51,7 @@ async function loadApiCommunication() {
         let details = {};
         try {
           details = JSON.parse(e.details_json || "{}");
-        } catch (err) {}
+        } catch (err) { }
         if (details.application_id) applicationId = details.application_id;
         if (e.event_type === "CONSENT_PERMISSION_DENIED") decision = "Denied";
         if (details.resource === "transactions")
@@ -60,12 +80,13 @@ async function loadApiCommunication() {
     });
 
     el.innerHTML = `<table>
-      <thead><tr><th>Time</th><th>Application</th><th>Action</th><th>Resource</th><th>Decision</th><th>HTTP Status</th></tr></thead>
+      <thead><tr><th>Time</th><th>Application</th><th>Channel</th><th>Action</th><th>Resource</th><th>Decision</th><th>HTTP Status</th></tr></thead>
       <tbody>${rows
         .map(
           (r) => `<tr>
         <td>${formatTimestamp(r.interaction.timestamp)}</td>
         <td>${escapeHtml(r.applicationId ? appsById[r.applicationId] || "—" : "—")}</td>
+        <td>${escapeHtml(channelLabel(r.interaction.source, r.interaction.destination))}</td>
         <td>${escapeHtml(r.interaction.http_method)}</td>
         <td>${escapeHtml(r.resource)}</td>
         <td>${badge(r.decision, r.decision)}</td>
@@ -299,6 +320,7 @@ async function loadTimeline(findingId) {
       <li class="timeline-item ${EMPHASIS_EVENT_TYPES.has(item.event_type) ? "emphasis" : ""}">
         <div class="timeline-meta">
           <span class="timeline-category">${escapeHtml(item.category)}</span> · ${formatTimestamp(item.timestamp)}
+          ${item.source || item.destination ? " · " + escapeHtml(channelLabel(item.source, item.destination)) : ""}
           ${item.response_status ? " · HTTP " + item.response_status : ""}
         </div>
         <div class="timeline-desc">${escapeHtml(item.description)}</div>
@@ -333,6 +355,7 @@ async function loadEvidence(findingId) {
         return `<div class="panel">
         <div class="kv-grid">
           <div><div class="kv-label">Event Type</div><div class="kv-value">${humanizeEventType(item.event_type)}</div></div>
+          <div><div class="kv-label">Channel</div><div class="kv-value">${escapeHtml(channelLabel(item.source, item.destination))}</div></div>
           <div><div class="kv-label">Timestamp</div><div class="kv-value">${formatTimestamp(item.timestamp)}</div></div>
           <div><div class="kv-label">Account</div><div class="kv-value">${escapeHtml(item.account_id || "—")}</div></div>
           <div><div class="kv-label">Integrity</div><div class="kv-value">${badge(item.integrity_status, ok ? "valid" : "invalid")}</div></div>
@@ -424,8 +447,8 @@ async function loadCustody(findingId) {
         <h4 style="margin-top:0;" class="hash-cell">${shortHash(eventId)}</h4>
         <table><thead><tr><th>Timestamp</th><th>Actor</th><th>Action</th><th>From</th><th>To</th><th>Reason</th><th>Integrity</th></tr></thead>
         <tbody>${records
-          .map(
-            (r) => `<tr>
+            .map(
+              (r) => `<tr>
           <td>${formatTimestamp(r.timestamp)}</td>
           <td>${escapeHtml(custodyActorLabel(r.actor))}</td>
           <td>${escapeHtml(custodyActionLabel(r.action))}</td>
@@ -434,8 +457,8 @@ async function loadCustody(findingId) {
           <td>${escapeHtml(r.reason || "—")}</td>
           <td>${badge(r.integrity_status || "UNKNOWN", r.integrity_status === "VALID" ? "valid" : "invalid")}</td>
         </tr>`,
-          )
-          .join("")}</tbody></table>
+            )
+            .join("")}</tbody></table>
       </div>`;
       })
       .join("");

@@ -113,7 +113,7 @@ def open_banking_request_access(app_name: str, request: AccessRequestCreate):
         endpoint=f"/open-banking/{app_name}/request-access",
         response_status=200,
         account_id=request.account_id,
-        source="LOCAL_CLIENT",
+        source="TPP",
         destination="OBFIR",
     )
     record_forensic_event(

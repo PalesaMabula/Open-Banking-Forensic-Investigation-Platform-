@@ -158,7 +158,7 @@ def forensics_finding_status_update(
         http_method="PATCH",
         endpoint=f"/forensics/findings/{finding_id}/status",
         response_status=200,
-        source="LOCAL_CLIENT",
+        source="INVESTIGATOR",
         destination="OBFIR",
     )
     record_forensic_event(

@@ -283,6 +283,12 @@ def get_related_evidence(finding_id: str) -> list[dict] | None:
 
         custody_history = get_custody_events(evidence_id=event_id)
 
+        interaction = (
+            get_api_interaction_by_id(event["interaction_id"])
+            if event.get("interaction_id")
+            else None
+        )
+
         evidence_items.append(
             {
                 "event_id": event["event_id"],
@@ -294,6 +300,8 @@ def get_related_evidence(finding_id: str) -> list[dict] | None:
                 "previous_hash": event.get("previous_hash"),
                 "integrity_status": check_single_event_integrity(event_id),
                 "custody_event_count": len(custody_history),
+                "source": interaction.get("source") if interaction else None,
+                "destination": interaction.get("destination") if interaction else None,
             }
         )
 
@@ -340,6 +348,12 @@ def build_timeline(finding_id: str) -> list[dict] | None:
         if event is None:
             continue
 
+        interaction = (
+            get_api_interaction_by_id(event["interaction_id"])
+            if event.get("interaction_id")
+            else None
+        )
+
         timeline_items.append(
             {
                 "timestamp": event["timestamp"],
@@ -348,23 +362,25 @@ def build_timeline(finding_id: str) -> list[dict] | None:
                 "description": _describe_forensic_event(event),
                 "event_id": event["event_id"],
                 "interaction_id": event.get("interaction_id"),
+                "source": interaction.get("source") if interaction else None,
+                "destination": interaction.get("destination") if interaction else None,
             }
         )
 
-        if event.get("interaction_id"):
-            interaction = get_api_interaction_by_id(event["interaction_id"])
-            if interaction:
-                timeline_items.append(
-                    {
-                        "timestamp": interaction["timestamp"],
-                        "category": "API_INTERACTION",
-                        "event_type": "API_REQUEST",
-                        "description": f"{interaction['http_method']} {interaction['endpoint']}",
-                        "event_id": None,
-                        "interaction_id": interaction["interaction_id"],
-                        "response_status": interaction.get("response_status"),
-                    }
-                )
+        if interaction:
+            timeline_items.append(
+                {
+                    "timestamp": interaction["timestamp"],
+                    "category": "API_INTERACTION",
+                    "event_type": "API_REQUEST",
+                    "description": f"{interaction['http_method']} {interaction['endpoint']}",
+                    "event_id": None,
+                    "interaction_id": interaction["interaction_id"],
+                    "response_status": interaction.get("response_status"),
+                    "source": interaction.get("source"),
+                    "destination": interaction.get("destination"),
+                }
+            )
 
         for custody in get_custody_events(evidence_id=event_id):
             timeline_items.append(
