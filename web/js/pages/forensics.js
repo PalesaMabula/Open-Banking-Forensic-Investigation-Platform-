@@ -51,7 +51,7 @@ async function loadApiCommunication() {
         let details = {};
         try {
           details = JSON.parse(e.details_json || "{}");
-        } catch (err) { }
+        } catch (err) {}
         if (details.application_id) applicationId = details.application_id;
         if (e.event_type === "CONSENT_PERMISSION_DENIED") decision = "Denied";
         if (details.resource === "transactions")
@@ -359,12 +359,15 @@ async function loadEvidence(findingId) {
           <div><div class="kv-label">Timestamp</div><div class="kv-value">${formatTimestamp(item.timestamp)}</div></div>
           <div><div class="kv-label">Account</div><div class="kv-value">${escapeHtml(item.account_id || "—")}</div></div>
           <div><div class="kv-label">Integrity</div><div class="kv-value">${badge(item.integrity_status, ok ? "valid" : "invalid")}</div></div>
+          <div><div class="kv-label">Signature</div><div class="kv-value">${badge(item.signature_status || "—", item.signature_status === "VALID" ? "valid" : "invalid")}</div></div>
           <div><div class="kv-label">Custody Records</div><div class="kv-value">${item.custody_event_count}</div></div>
         </div>
         <div style="margin-top:10px;"><div class="kv-label">Event Hash</div>
           <div class="hash-cell">${shortHash(item.event_hash)}<button class="hash-toggle" data-full="${escapeHtml(item.event_hash || "")}">Show Full</button></div></div>
         <div style="margin-top:6px;"><div class="kv-label">Previous Hash</div>
           <div class="hash-cell">${shortHash(item.previous_hash)}<button class="hash-toggle" data-full="${escapeHtml(item.previous_hash || "")}">Show Full</button></div></div>
+        <div style="margin-top:6px;"><div class="kv-label">Digital Signature (Ed25519)</div>
+          <div class="hash-cell">${shortHash(item.signature)}<button class="hash-toggle" data-full="${escapeHtml(item.signature || "")}">Show Full</button></div></div>
         <details style="margin-top:10px;"><summary style="cursor:pointer; font-size:13px; color: var(--accent-dark);">View Metadata</summary>
           <pre style="white-space:pre-wrap; font-size:12px; background:var(--surface-alt); padding:10px; border-radius:4px;">${escapeHtml(JSON.stringify(item.details || {}, null, 2))}</pre>
         </details>
@@ -447,8 +450,8 @@ async function loadCustody(findingId) {
         <h4 style="margin-top:0;" class="hash-cell">${shortHash(eventId)}</h4>
         <table><thead><tr><th>Timestamp</th><th>Actor</th><th>Action</th><th>From</th><th>To</th><th>Reason</th><th>Integrity</th></tr></thead>
         <tbody>${records
-            .map(
-              (r) => `<tr>
+          .map(
+            (r) => `<tr>
           <td>${formatTimestamp(r.timestamp)}</td>
           <td>${escapeHtml(custodyActorLabel(r.actor))}</td>
           <td>${escapeHtml(custodyActionLabel(r.action))}</td>
@@ -457,8 +460,8 @@ async function loadCustody(findingId) {
           <td>${escapeHtml(r.reason || "—")}</td>
           <td>${badge(r.integrity_status || "UNKNOWN", r.integrity_status === "VALID" ? "valid" : "invalid")}</td>
         </tr>`,
-            )
-            .join("")}</tbody></table>
+          )
+          .join("")}</tbody></table>
       </div>`;
       })
       .join("");

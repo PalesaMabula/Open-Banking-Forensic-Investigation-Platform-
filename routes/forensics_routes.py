@@ -61,6 +61,15 @@ def forensics_integrity():
     return verify_evidence_chain()
 
 
+@router.get("/forensics/public-key")
+def forensics_public_key():
+    """Publishes the Ed25519 public key so evidence signatures can be
+    verified independently of this platform."""
+    from forensic.signing import get_public_key_hex
+
+    return {"algorithm": "Ed25519", "public_key": get_public_key_hex()}
+
+
 
 
 #chain of custody 

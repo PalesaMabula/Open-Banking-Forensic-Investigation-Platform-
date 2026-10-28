@@ -3,6 +3,7 @@ import json
 import sqlite3
 
 from database.database import get_connection
+from forensic.signing import sign, verify
 
 # The first event in the chain has no event before it...  
 # use an emoty string  so it hashes and compares as ordinary text with no
@@ -74,15 +75,44 @@ def backfill_hash_chain() -> int:
 
     for row in rows_to_backfill:
         event_hash = calculate_event_hash(row, previous_hash)
+        signature = sign(event_hash)
         cursor.execute(
-            "UPDATE forensic_events SET previous_hash = ?, event_hash = ? WHERE event_id = ?",
-            (previous_hash, event_hash, row["event_id"]),
+            "UPDATE forensic_events SET previous_hash = ?, event_hash = ?, signature = ? WHERE event_id = ?",
+            (previous_hash, event_hash, signature, row["event_id"]),
         )
         previous_hash = event_hash
 
     conn.commit()
     conn.close()
     return len(rows_to_backfill)
+
+
+def backfill_signatures() -> int:
+    """Signs any event that already has a hash but no signature (e.g. events
+    created before signing was introduced), so the chain stays verifiable
+    after upgrading an existing database."""
+    conn = get_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT event_id, event_hash FROM forensic_events "
+        "WHERE event_hash IS NOT NULL AND signature IS NULL ORDER BY rowid ASC"
+    )
+    rows = cursor.fetchall()
+
+    if not rows:
+        conn.close()
+        return 0
+
+    for row in rows:
+        cursor.execute(
+            "UPDATE forensic_events SET signature = ? WHERE event_id = ?",
+            (sign(row["event_hash"]), row["event_id"]),
+        )
+
+    conn.commit()
+    conn.close()
+    return len(rows)
 
 # records a custody event in the forensic database and returns a unique custody_event_id for linking to evidence and findings
 def verify_evidence_chain() -> dict:
@@ -113,6 +143,14 @@ def verify_evidence_chain() -> dict:
                 "events_checked": index - 1,
                 "failed_event_id": row["event_id"],
                 "reason": "event hash mismatch",
+            }
+
+        if not verify(recalculated_hash, row.get("signature")):
+            return {
+                "valid": False,
+                "events_checked": index - 1,
+                "failed_event_id": row["event_id"],
+                "reason": "digital signature invalid",
             }
 
         expected_previous_hash = recalculated_hash

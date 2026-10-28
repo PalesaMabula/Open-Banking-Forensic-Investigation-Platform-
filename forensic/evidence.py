@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 
 from database.database import get_connection
 from forensic.integrity import calculate_event_hash, get_latest_event_hash
+from forensic.signing import sign
 from forensic.custody import record_custody_event
 
 
@@ -77,6 +78,7 @@ def record_forensic_event(
 
     previous_hash = get_latest_event_hash()
     event_hash = calculate_event_hash(event_data, previous_hash)
+    signature = sign(event_hash)
 
     conn = get_connection()
     cursor = conn.cursor()
@@ -85,8 +87,8 @@ def record_forensic_event(
         INSERT INTO forensic_events (
             event_id, interaction_id, timestamp, event_type,
             actor_type, actor_id, account_id, details_json, created_at,
-            previous_hash, event_hash
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            previous_hash, event_hash, signature
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             event_id,
@@ -100,6 +102,7 @@ def record_forensic_event(
             created_at,
             previous_hash,
             event_hash,
+            signature,
         ),
     )
     conn.commit()

@@ -11,7 +11,7 @@ from auth.investigator import seed_demo_investigators
 from banking.investec import get_access_token, get_accounts
 from database.database import init_database, get_connection
 from forensic.custody import backfill_created_custody_events
-from forensic.integrity import backfill_hash_chain
+from forensic.integrity import backfill_hash_chain, backfill_signatures
 
 from routes import (
     auth_routes,
@@ -29,6 +29,7 @@ from routes import (
 async def lifespan(app: FastAPI):
     init_database()
     backfill_hash_chain()
+    backfill_signatures()
     seed_demo_applications()
     seed_demo_consents()
     seed_demo_investigators()
@@ -70,6 +71,7 @@ def investec_token_test():
         "scope": token_data.get("scope"),
     }
 
+
 @app.get("/sandbox/accounts")
 def sandbox_accounts():
     """Demo helper: lists the live Investec sandbox accounts so the UI can
@@ -95,6 +97,7 @@ def sandbox_accounts():
         if acc.get("accountId")
     ]
     return {"status": "ok", "accounts": accounts}
+
 
 @app.get("/database/status")
 def database_status():

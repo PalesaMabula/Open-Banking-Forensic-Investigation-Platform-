@@ -14,6 +14,7 @@ from forensic.custody import (
     verify_custody_chain,
 )
 from forensic.integrity import verify_evidence_chain
+from forensic.signing import verify
 from auth.consent import get_consent, get_consents_for_account
 
 ALLOWED_FINDING_STATUSES = {"OPEN", "REVIEWED", "CLOSED"}
@@ -302,6 +303,12 @@ def get_related_evidence(finding_id: str) -> list[dict] | None:
                 "custody_event_count": len(custody_history),
                 "source": interaction.get("source") if interaction else None,
                 "destination": interaction.get("destination") if interaction else None,
+                "signature": event.get("signature"),
+                "signature_status": (
+                    "VALID"
+                    if verify(event.get("event_hash") or "", event.get("signature"))
+                    else "INVALID"
+                ),
             }
         )
 

@@ -19,6 +19,9 @@ def _migrate_forensic_events_integrity_columns(cursor, conn) -> None:
     if "event_hash" not in existing_columns:
         cursor.execute("ALTER TABLE forensic_events ADD COLUMN event_hash TEXT")
 
+    if "signature" not in existing_columns:
+        cursor.execute("ALTER TABLE forensic_events ADD COLUMN signature TEXT")
+
     conn.commit()
 
 
@@ -60,6 +63,9 @@ def init_database() -> None:
             account_id TEXT,
             details_json TEXT,
             created_at TEXT NOT NULL,
+            previous_hash TEXT,
+            event_hash TEXT,
+            signature TEXT,
             FOREIGN KEY (interaction_id) REFERENCES api_interactions (interaction_id)
         )
     """)
